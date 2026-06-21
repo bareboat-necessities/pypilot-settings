@@ -7,8 +7,11 @@
 
 int main() {
     const char* path = "pypilot_settings_file_store_test.conf";
+    const char* tmp_path = "pypilot_settings_file_store_test.conf.tmp";
+    const char* bak_path = "pypilot_settings_file_store_test.conf.bak";
     std::remove(path);
-    std::remove("pypilot_settings_file_store_test.conf.tmp");
+    std::remove(tmp_path);
+    std::remove(bak_path);
 
     {
         std::ofstream seed(path);
@@ -40,6 +43,7 @@ int main() {
     assert(!store.erase("not.present"));
 
     std::remove(path);
-    std::remove("pypilot_settings_file_store_test.conf.tmp");
+    std::remove(tmp_path);
+    std::remove(bak_path);
     return 0;
 }
