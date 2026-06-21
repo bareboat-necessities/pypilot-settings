@@ -45,17 +45,13 @@ public:
         return store_.erase(name);
     }
 
-    bool reset_scope(SettingScope scope) {
-        bool ok = true;
+    void reset_scope(SettingScope scope) {
         for (size_t i = 0; i < catalog_.count(); ++i) {
             const SettingDescriptor& descriptor = catalog_.at(i);
             if (descriptor.scope == scope && descriptor.persistent) {
-                if (!store_.erase(descriptor.name)) {
-                    ok = false;
-                }
+                store_.erase(descriptor.name);
             }
         }
-        return ok;
     }
 
     size_t count_scope(SettingScope scope) const {
