@@ -22,6 +22,7 @@ endfunction()
 add_settings_test(test_settings_catalog tests/test_settings_catalog.cpp)
 add_settings_test(test_memory_store tests/test_memory_store.cpp)
 add_settings_test(test_file_store tests/test_file_store.cpp)
+add_settings_test(test_scope_helpers tests/test_scope_helpers.cpp)
 add_settings_test(test_validation tests/test_validation.cpp)
 
 add_executable(settings_example examples/SettingsExample/SettingsExample.cpp)
