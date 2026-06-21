@@ -3,6 +3,9 @@
 #include <pypilot_settings_catalog.hpp>
 #include <pypilot_settings_store.hpp>
 #include <pypilot_settings_memory_store.hpp>
+#include <pypilot_settings_paths.hpp>
+#include <pypilot_settings_version.hpp>
+#include <pypilot_settings_save_policy.hpp>
 
 #if !defined(ARDUINO)
 #include <pypilot_settings_file_store.hpp>
