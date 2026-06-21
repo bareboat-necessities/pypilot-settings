@@ -3,9 +3,26 @@
 #include <pypilot_settings_catalog.hpp>
 #include <pypilot_settings_store.hpp>
 #include <pypilot_settings_memory_store.hpp>
+
+#if !defined(ARDUINO)
 #include <pypilot_settings_file_store.hpp>
+#endif
+
+#if defined(ARDUINO) && defined(ESP32)
+#include <pypilot_settings_nvs_store.hpp>
+#endif
 
 namespace pypilot_settings {
+
+static inline const char* setting_scope_name(SettingScope scope) {
+    switch (scope) {
+    case SettingScope::Runtime: return "runtime";
+    case SettingScope::Profile: return "profile";
+    case SettingScope::Calibration: return "calibration";
+    case SettingScope::Factory: return "factory";
+    }
+    return "unknown";
+}
 
 class SettingsManager final {
 public:
@@ -26,6 +43,27 @@ public:
 
     bool reset_value(const char* name) {
         return store_.erase(name);
+    }
+
+    bool reset_scope(SettingScope scope) {
+        bool ok = true;
+        for (size_t i = 0; i < catalog_.count(); ++i) {
+            const SettingDescriptor& descriptor = catalog_.at(i);
+            if (descriptor.scope == scope && descriptor.persistent) {
+                if (!store_.erase(descriptor.name)) {
+                    ok = false;
+                }
+            }
+        }
+        return ok;
+    }
+
+    size_t count_scope(SettingScope scope) const {
+        size_t count = 0;
+        for (size_t i = 0; i < catalog_.count(); ++i) {
+            if (catalog_.at(i).scope == scope) ++count;
+        }
+        return count;
     }
 
     bool validate_value(const char* name, const char* value, char* error, size_t error_size) const {
