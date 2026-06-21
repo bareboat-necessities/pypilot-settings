@@ -3,6 +3,7 @@
 #include <pypilot_settings_catalog.hpp>
 #include <pypilot_settings_store.hpp>
 #include <pypilot_settings_memory_store.hpp>
+#include <pypilot_settings_file_store.hpp>
 
 namespace pypilot_settings {
 
