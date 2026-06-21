@@ -22,17 +22,40 @@ enum class SettingScope {
 };
 
 struct SettingDescriptor {
-    const char* name = "";
-    SettingType type = SettingType::String;
-    SettingScope scope = SettingScope::Runtime;
-    bool persistent = false;
-    bool writable = true;
-    const char* default_value = "";
-    double min_value = 0.0;
-    double max_value = 0.0;
-    size_t max_length = 0;
-    const char* const* choices = nullptr;
-    size_t choice_count = 0;
+    const char* name;
+    SettingType type;
+    SettingScope scope;
+    bool persistent;
+    bool writable;
+    const char* default_value;
+    double min_value;
+    double max_value;
+    size_t max_length;
+    const char* const* choices;
+    size_t choice_count;
+
+    constexpr SettingDescriptor(const char* name_ = "",
+                                SettingType type_ = SettingType::String,
+                                SettingScope scope_ = SettingScope::Runtime,
+                                bool persistent_ = false,
+                                bool writable_ = true,
+                                const char* default_value_ = "",
+                                double min_value_ = 0.0,
+                                double max_value_ = 0.0,
+                                size_t max_length_ = 0,
+                                const char* const* choices_ = nullptr,
+                                size_t choice_count_ = 0)
+        : name(name_),
+          type(type_),
+          scope(scope_),
+          persistent(persistent_),
+          writable(writable_),
+          default_value(default_value_),
+          min_value(min_value_),
+          max_value(max_value_),
+          max_length(max_length_),
+          choices(choices_),
+          choice_count(choice_count_) {}
 };
 
 static inline bool settings_copy(char* dst, size_t dst_size, const char* src) {
