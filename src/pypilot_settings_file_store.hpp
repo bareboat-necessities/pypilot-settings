@@ -90,6 +90,15 @@ public:
         return write_lines(kept);
     }
 
+    bool recover_backup() const {
+        const std::string backup = backup_path();
+        std::ifstream input(backup);
+        if (!input.good()) return false;
+        input.close();
+        std::remove(path_.c_str());
+        return std::rename(backup.c_str(), path_.c_str()) == 0;
+    }
+
 private:
     void read_lines(std::vector<std::string>& lines) const {
         std::ifstream input(path_);
@@ -101,18 +110,40 @@ private:
 
     bool write_lines(const std::vector<std::string>& lines) const {
         const std::string tmp = path_ + ".tmp";
+        const std::string backup = backup_path();
         {
             std::ofstream output(tmp, std::ios::trunc);
             if (!output.good()) return false;
             for (const std::string& line : lines) {
                 output << line << '\n';
             }
+            output.flush();
+            if (!output.good()) {
+                std::remove(tmp.c_str());
+                return false;
+            }
         }
-        if (std::rename(tmp.c_str(), path_.c_str()) != 0) {
+
+        std::remove(backup.c_str());
+        bool had_original = false;
+        {
+            std::ifstream existing(path_);
+            had_original = existing.good();
+        }
+        if (had_original && std::rename(path_.c_str(), backup.c_str()) != 0) {
             std::remove(tmp.c_str());
             return false;
         }
+        if (std::rename(tmp.c_str(), path_.c_str()) != 0) {
+            std::remove(tmp.c_str());
+            if (had_original) std::rename(backup.c_str(), path_.c_str());
+            return false;
+        }
         return true;
+    }
+
+    std::string backup_path() const {
+        return path_ + ".bak";
     }
 
     std::string path_;
