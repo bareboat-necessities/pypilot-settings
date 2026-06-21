@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stddef.h>
+#include <string.h>
+
 namespace pypilot_settings {
 
 enum class SettingSavePolicy {
