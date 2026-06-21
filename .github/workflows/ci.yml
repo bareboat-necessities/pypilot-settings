@@ -15,3 +15,19 @@ jobs:
         run: cmake --build build --parallel
       - name: Test
         run: ctest --test-dir build --output-on-failure
+
+  arduino-esp32s3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: Arduino/libraries/pypilot-settings
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Configure Arduino libraries path
+        run: arduino-cli config set directories.user $GITHUB_WORKSPACE/Arduino
+      - name: Install ESP32 core
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
+      - name: Compile SettingsExample for ESP32-S3
+        run: arduino-cli compile --fqbn esp32:esp32:esp32s3 Arduino/libraries/pypilot-settings/examples/SettingsExample
