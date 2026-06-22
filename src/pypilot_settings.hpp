@@ -9,6 +9,7 @@
 
 #if !defined(ARDUINO)
 #include <pypilot_settings_file_store.hpp>
+#include <pypilot_settings_config_store.hpp>
 #endif
 
 #if defined(ARDUINO) && defined(ESP32)
