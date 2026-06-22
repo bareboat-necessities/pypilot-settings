@@ -2,6 +2,7 @@
 
 #if !defined(ARDUINO)
 
+#include <cstddef>
 #include <stdio.h>
 #include <string>
 #include <vector>
