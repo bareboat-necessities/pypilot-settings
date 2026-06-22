@@ -23,6 +23,7 @@ The module is dependency-light and does not depend on `pypilot-runtime`.
 - Validation for bool syntax, number ranges, string length, enum choices, unknown settings, and non-writable settings.
 - In-memory settings store for tests and embedded use.
 - File-backed settings store using a simple `name=value` format for Linux/native use.
+- Pypilot-compatible native config store for global values and `[profile="name"]` sections in one `pypilot.conf` file.
 - Backup/rollback file writes using `.tmp` and `.bak` files.
 - ESP32 NVS settings store through `ArduinoNvsSettingsStore` when compiling under Arduino ESP32.
 - Schema version helpers and migration-step runner.
@@ -56,7 +57,21 @@ Common files are:
 ~/.pypilot/ruddercalibration
 ```
 
-Profile files use sanitized names under:
+`PypilotConfigStore` reads and writes profile settings inside the same `pypilot.conf` file using pypilot-style profile sections:
+
+```text
+ap.mode=compass
+servo.max_current=15.0
+
+[profile="default"]
+ap.pilot=basic
+servo.max_current=12.0
+
+[profile="heavy weather"]
+ap.pilot=wind
+```
+
+The lower-level path helper `pypilot_profile_file_path()` is still available for code that wants separate profile files under:
 
 ```text
 ~/.pypilot/profiles/<profile>.conf
@@ -64,7 +79,7 @@ Profile files use sanitized names under:
 
 Only letters, numbers, `_`, `-`, and `.` are kept in profile filenames; other characters are converted to `_`.
 
-## File format
+## File formats
 
 `FileSettingsStore` uses a simple text format:
 
@@ -86,6 +101,8 @@ Rules:
 - writes create a `.tmp` file, move the previous file to `.bak`, then move `.tmp` into place;
 - if the final move fails, the `.bak` file is restored.
 
+`PypilotConfigStore` follows the same assignment rules, but scopes lookups and writes to either the global section or a named `[profile="name"]` section.
+
 ## ESP32 NVS backend
 
 `ArduinoNvsSettingsStore` is available only when compiling for Arduino ESP32:
@@ -97,7 +114,7 @@ store.save("ap.mode", "compass");
 store.end();
 ```
 
-The public umbrella header avoids including the native file-store backend under Arduino builds.
+The public umbrella header avoids including the native file-store and config-store backends under Arduino builds.
 
 ## Runtime daemon save policy
 
@@ -134,6 +151,7 @@ src/
   pypilot_settings_store.hpp
   pypilot_settings_memory_store.hpp
   pypilot_settings_file_store.hpp
+  pypilot_settings_config_store.hpp
   pypilot_settings_nvs_store.hpp
   pypilot_settings_paths.hpp
   pypilot_settings_version.hpp
@@ -142,6 +160,7 @@ tests/
   test_settings_catalog.cpp
   test_memory_store.cpp
   test_file_store.cpp
+  test_pypilot_config_store.cpp
   test_scope_helpers.cpp
   test_paths.cpp
   test_version_policy.cpp
